@@ -25,7 +25,8 @@ class UserController extends Controller
                 'email',
                 'created_at',
                 'updated_at'
-            )->orderBy('id', 'desc')->get();
+            )->whereNotIn('id', [auth()->user()->id])
+            ->orderBy('id', 'desc')->get();
         } else {
             return response()->json([
                 'message' => 'Unauthorized'
@@ -106,8 +107,30 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(UserModel $userModel)
+    public function destroy($id)
     {
-        //
+        
+        if (auth()->user()) {
+            $user = User::find($id);
+            $user->delete();
+
+            if($user->picture !== null) {
+                $image_path = public_path().'/images/'.$user->picture;
+                if (file_exists($image_path)) {
+                    unlink($image_path);
+                }
+            }
+
+            return response()->json([
+                'status' => '200',
+                'message' => 'User deleted successfully'
+            ]);
+        } else {
+            return response()->json([
+                'status' => '401',
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
     }
 }
