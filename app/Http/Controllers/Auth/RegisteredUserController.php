@@ -36,6 +36,12 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
+
+        /* return response()->json([
+            'status' => '200',
+            'user' => $user
+        ]); */
+
         return response()->noContent();
     }
 }
