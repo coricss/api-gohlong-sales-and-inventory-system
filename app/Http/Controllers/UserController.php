@@ -91,9 +91,16 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(UserModel $userModel)
+    public function show($id)
     {
-        //
+        return UserModel::select(
+            'id',
+            'picture',
+            'name', 
+            'email',
+            'created_at',
+            'updated_at'
+        )->where('id', $id)->first();
     }
 
     /**
@@ -101,7 +108,81 @@ class UserController extends Controller
      */
     public function update(Request $request, UserModel $userModel)
     {
-        //
+        if (auth()->user()) {
+            $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email'],
+            ]);
+
+            try {
+
+                $user_pic = User::select('picture')->where('id', $request->id)->first();
+
+                if ($request->hasFile('picture')) {
+                    $image = $request->file('picture');
+                    $image_name = 'IMG_'.date('ymd').time() . '.' . $image->getClientOriginalExtension();
+                    $image->move(public_path('images'), $image_name);
+    
+                    $user = User::find($request->id);
+                    $user->picture = $image_name;
+                    $user->name = $request->name;
+                    $user->email = $request->email;
+                    $user->updated_at = date('Y-m-d H:i:s');
+                    $user->save();
+
+                    if($user_pic->picture !== null) {
+                        $image_path = public_path().'/images/'.$user_pic->picture;
+                        if (file_exists($image_path)) {
+                            unlink($image_path);
+                        }
+                    }
+                } else {
+                    $user = User::find($request->id);
+                    $user->name = $request->name;
+                    $user->email = $request->email;
+                    $user->updated_at = date('Y-m-d H:i:s');
+                    $user->save();
+                }
+
+                return response()->json([
+                    'status' => '200',
+                    'message' => 'User updated successfully'
+                ]);
+
+               /*  return $request; */
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => '500',
+                    'message' => 'Error updating user'
+                ], 500);
+            }
+
+            
+        } else {
+            return response()->json([
+                'status' => '401',
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+    }
+
+    public function reset_password($id) {
+        if (auth()->user()) {
+            $user = User::find($id);
+            $user->password = Hash::make('GTSC@2023');
+            $user->updated_at = date('Y-m-d H:i:s');
+            $user->save();
+
+            return response()->json([
+                'status' => '200',
+                'message' => 'Password reset successfully'
+            ]);
+        } else {
+            return response()->json([
+                'status' => '401',
+                'message' => 'Unauthorized'
+            ], 401);
+        }
     }
 
     /**
