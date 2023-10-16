@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ProfileModel;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 class ProfileController extends Controller
 {
     /**
@@ -30,10 +31,6 @@ class ProfileController extends Controller
     {
         //
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
 
     public function update_picture(Request $request, ProfileModel $profileModel)
     {
@@ -140,11 +137,56 @@ class ProfileController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(ProfileModel $profileModel)
+
+    public function change_password(Request $request, ProfileModel $profileModel)
     {
-        //
+        if (auth()->user()) {
+            
+            try {
+
+                $old_password = $request->old_password;
+                $new_password = $request->new_password;
+                $confirm_password = $request->confirm_password;
+
+                /* $request->validate([
+                    'new_password' => ['required', 'confirmed', Rules\Password::defaults()],
+                ]); */
+               
+                if ($new_password !== $confirm_password) {
+                    return response()->json([
+                        'status' => '400',
+                        'message' => 'New password and confirm password does not match',
+                    ], 200);
+                } else {
+                    $user = ProfileModel::where('id', auth()->user()->id)->first();
+                    if (Hash::check($old_password, $user->password)) {
+                        ProfileModel::where('id', auth()->user()->id)->update([
+                            'password' => Hash::make($new_password),
+                            'is_new_user' => '0'
+                        ]);
+
+                        return response()->json([
+                            'status' => '200',
+                            'message' => 'User password updated successfully',
+                        ], 200);
+                    } else {
+                        return response()->json([
+                            'status' => '400',
+                            'message' => 'Old password does not match',
+                        ], 200);
+                    }
+                }
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => '500',
+                    'message' => 'Something went wrong',
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'status' => '401',
+                'message' => 'Unauthorized',
+            ], 401);
+        }
     }
 }

@@ -27,6 +27,7 @@ Route::get('/users', [UserController::class, 'index']);
 Route::post('profile/update-picture', [ProfileController::class, 'update_picture']);
 Route::post('/profile/update-name', [ProfileController::class, 'update_name']);
 Route::post('/profile/update-email', [ProfileController::class, 'update_email']);
+Route::post('/profile/change-password', [ProfileController::class, 'change_password']);
 
 /* Users Management */
 Route::post('/register', [UserController::class, 'store']);
