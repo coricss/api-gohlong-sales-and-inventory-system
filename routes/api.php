@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,3 +36,13 @@ Route::get('/users/{id}', [UserController::class, 'show']);
 Route::post('/users/update/', [UserController::class, 'update']);
 Route::put('/users/reset-password/{id}', [UserController::class, 'reset_password']);
 Route::delete('/users/delete/{id}', [UserController::class, 'destroy']);
+
+/* Inventory Management */
+
+
+//Categories
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::post('/new-category', [CategoryController::class, 'store']);
+Route::get('/category/{id}', [CategoryController::class, 'show']);
+Route::put('/update-category/{id}', [CategoryController::class, 'update']);
+Route::delete('/delete-category/{id}', [CategoryController::class, 'destroy']);
