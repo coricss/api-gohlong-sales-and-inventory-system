@@ -6,7 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CategoryController;
-
+use App\Http\Controllers\BrandsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -46,3 +46,10 @@ Route::post('/new-category', [CategoryController::class, 'store']);
 Route::get('/category/{id}', [CategoryController::class, 'show']);
 Route::put('/update-category/{id}', [CategoryController::class, 'update']);
 Route::delete('/delete-category/{id}', [CategoryController::class, 'destroy']);
+
+// Brands
+Route::get('/brands', [BrandsController::class, 'index']);
+Route::post('/new-brand', [BrandsController::class, 'store']);
+Route::get('/brand/{id}', [BrandsController::class, 'show']);
+Route::put('/update-brand/{id}', [BrandsController::class, 'update']);
+Route::delete('/delete-brand/{id}', [BrandsController::class, 'destroy']);
