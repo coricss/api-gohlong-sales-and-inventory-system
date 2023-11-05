@@ -122,6 +122,48 @@ class ProductsController extends Controller
         }
     }
 
+    public function product_code($product_code) {
+        if(auth()->user()) {
+            try {
+                $product = Products::selectRaw(
+                    'products.id,
+                    products.product_id,
+                    products.brand_id,
+                    products.category_id,
+                    products.model_size,
+                    brands.brand_name,
+                    categories.category_name,
+                    products.stocks,
+                    products.price,
+                    products.discount,
+                    products.price * products.stocks as total_stock_price,
+                    products.discount * products.stocks as total_stock_discounted_price,
+                    products.created_at,
+                    products.updated_at'
+                )->join('brands', 'products.brand_id', '=', 'brands.id')
+                ->join('categories', 'products.category_id', '=', 'categories.id')
+                ->where('products.product_id', $product_code)
+                ->orderBy('products.id', 'desc')->first();
+
+                return response()->json([
+                    'status' => '200',
+                    'message' => 'Product fetched successfully',
+                    'product' => $product
+                ], 201);
+
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => '500',
+                    'message' => 'Error fetching products'
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

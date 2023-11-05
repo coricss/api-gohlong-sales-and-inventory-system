@@ -59,6 +59,7 @@ Route::delete('/delete-brand/{id}', [BrandsController::class, 'destroy']);
 Route::get('/products', [ProductsController::class, 'index']);
 Route::post('/new-product', [ProductsController::class, 'store']);
 Route::get('/product/{id}', [ProductsController::class, 'show']);
+Route::get('/product-code/{product_code}', [ProductsController::class, 'product_code']);
 Route::put('/update-product/{id}', [ProductsController::class, 'update']);
 Route::delete('/delete-product/{id}', [ProductsController::class, 'destroy']);
 Route::get('/print-barcode/{id}', [ProductsController::class, 'print_barcode']);
