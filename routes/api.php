@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BrandsController;
+use App\Http\Controllers\ProductsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -53,3 +54,11 @@ Route::post('/new-brand', [BrandsController::class, 'store']);
 Route::get('/brand/{id}', [BrandsController::class, 'show']);
 Route::put('/update-brand/{id}', [BrandsController::class, 'update']);
 Route::delete('/delete-brand/{id}', [BrandsController::class, 'destroy']);
+
+// Products
+Route::get('/products', [ProductsController::class, 'index']);
+Route::post('/new-product', [ProductsController::class, 'store']);
+Route::get('/product/{id}', [ProductsController::class, 'show']);
+Route::put('/update-product/{id}', [ProductsController::class, 'update']);
+Route::delete('/delete-product/{id}', [ProductsController::class, 'destroy']);
+Route::get('/print-barcode/{id}', [ProductsController::class, 'print_barcode']);
