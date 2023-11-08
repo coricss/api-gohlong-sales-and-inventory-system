@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -31,6 +32,11 @@ Route::post('profile/update-picture', [ProfileController::class, 'update_picture
 Route::post('/profile/update-name', [ProfileController::class, 'update_name']);
 Route::post('/profile/update-email', [ProfileController::class, 'update_email']);
 Route::post('/profile/change-password', [ProfileController::class, 'change_password']);
+
+/* Dashboard */
+Route::get('/widgets', [DashboardController::class, 'index']);
+Route::get('/weekly-sales', [DashboardController::class, 'getWeeklySales']);
+Route::get('/top-products', [DashboardController::class, 'getTopProducts']);
 
 /* Users Management */
 Route::post('/register', [UserController::class, 'store']);
