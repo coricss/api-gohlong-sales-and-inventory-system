@@ -10,6 +10,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BrandsController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SalesController;
+use App\Http\Controllers\LogsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -74,3 +75,7 @@ Route::get('/print-barcode/{id}', [ProductsController::class, 'print_barcode']);
 /* SALES */
 Route::get('/sales', [SalesController::class, 'index']);
 Route::post('/new-sale', [SalesController::class, 'store']);
+
+/* LOGS */
+Route::get('/logs', [LogsController::class, 'index']);
+Route::post('/new-log', [LogsController::class, 'store']);

@@ -175,6 +175,7 @@ class UserController extends Controller
 
             return response()->json([
                 'status' => '200',
+                'name' => $user->name,
                 'message' => 'Password reset successfully'
             ]);
         } else {
