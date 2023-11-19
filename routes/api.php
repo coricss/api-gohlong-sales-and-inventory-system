@@ -73,8 +73,10 @@ Route::delete('/delete-product/{id}', [ProductsController::class, 'destroy']);
 Route::get('/print-barcode/{id}', [ProductsController::class, 'print_barcode']);
 
 /* SALES */
+Route::get('/count-sales', [SalesController::class, 'count_sales_today']);
 Route::get('/sales', [SalesController::class, 'index']);
 Route::post('/new-sale', [SalesController::class, 'store']);
+Route::post('/revert-transaction', [SalesController::class, 'revert_transaction']);
 
 /* LOGS */
 Route::get('/logs', [LogsController::class, 'index']);

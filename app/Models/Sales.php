@@ -12,6 +12,8 @@ class Sales extends Model
 
 
     protected $fillable = [
+        'cashier_name',
+        'transaction_id',
         'customer_name',
         'product_id',
         'is_discounted',

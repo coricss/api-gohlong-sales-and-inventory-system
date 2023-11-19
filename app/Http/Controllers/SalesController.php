@@ -12,12 +12,62 @@ class SalesController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    public function count_sales_today() {
+        if(auth()->user()) {
+            try {
+                return Sales::whereDate('created_at', date('Y-m-d'))->count();
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => '500',
+                    'message' => 'Error fetching sales'
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+    }
+
+    public function revert_transaction(Request $request) {
+        if(auth()->user()) {
+            try {
+                $sales = Sales::where('transaction_id', $request->transaction_id)->get();
+                foreach($sales as $sale) {
+                    $product = Products::where('product_id', $sale->product_id)->first();
+                    $product->update([
+                        'stocks' => $product->stocks + $sale->quantity
+                    ]);
+                }
+
+                Sales::where('transaction_id', $request->transaction_id)->delete();
+
+                return response()->json([
+                    'status' => '200',
+                    'message' => 'Transaction reverted successfully'
+                ], 200);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => '500',
+                    'message' => $th->getMessage()
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+    }
+
     public function index()
     {
         if(auth()->user()) {
             try {
                 return Sales::selectRaw(
                     'sales.id,
+                    sales.cashier_name,
+                    sales.transaction_id,
                     sales.customer_name,
                     products.product_id AS product_id,
                     products.model_size AS model_size,
@@ -69,6 +119,8 @@ class SalesController extends Controller
                 $prod = [];
                 foreach($request->items as $item) {
                     $sales = Sales::create([
+                        'cashier_name' => $request->cashier_name,
+                        'transaction_id' => $request->transaction_id,
                         'customer_name' => $request->customer_name,
                         'product_id' => $item['product_id'],
                         'is_discounted' => $item['is_discounted'],
