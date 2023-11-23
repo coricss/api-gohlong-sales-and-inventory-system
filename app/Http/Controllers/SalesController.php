@@ -36,9 +36,16 @@ class SalesController extends Controller
                 $sales = Sales::where('transaction_id', $request->transaction_id)->get();
                 foreach($sales as $sale) {
                     $product = Products::where('product_id', $sale->product_id)->first();
-                    $product->update([
-                        'stocks' => $product->stocks + $sale->quantity
-                    ]);
+
+                    if($product->old_stocks > 0) {
+                        $product->update([
+                            'old_stocks' => $product->old_stocks + $sale->quantity
+                        ]);
+                    } else {
+                        $product->update([
+                            'stocks' => $product->stocks + $sale->quantity
+                        ]);
+                    }
                 }
 
                 Sales::where('transaction_id', $request->transaction_id)->delete();
@@ -131,9 +138,16 @@ class SalesController extends Controller
                     ]);
 
                     $product = Products::where('product_id', $item['product_id'])->first();
-                    $product->update([
-                        'stocks' => $product->stocks - $item['quantity']
-                    ]);
+
+                    if($product->old_stocks > 0) {
+                        $product->update([
+                            'old_stocks' => $product->old_stocks - $item['quantity']
+                        ]);
+                    } else {
+                        $product->update([
+                            'stocks' => $product->stocks - $item['quantity']
+                        ]);
+                    }
                 }
 
                 return response()->json([

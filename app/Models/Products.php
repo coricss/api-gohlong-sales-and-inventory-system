@@ -16,6 +16,8 @@ class Products extends Model
         'brand_id',
         'category_id',
         'stocks',
+        'old_stocks',
+        'stock_added_at',
         'price',
         'discount'
     ];

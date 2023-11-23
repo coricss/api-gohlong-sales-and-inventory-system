@@ -16,6 +16,20 @@ class ProductsController extends Controller
     {
         if(auth()->user()) {
             try {
+
+                /* update stocks to old stocks if product was 2 years old and above */
+                $products = Products::all()
+                ->where('stock_added_at', '<=', now()->subYears(2));
+
+                foreach($products as $product) {
+                    if($product->stocks > 0) {
+                        Products::where('id', $product->id)->update([
+                            'old_stocks' => $product->old_stocks + $product->stocks,
+                            'stocks' => 0
+                        ]);
+                    }
+                }
+
                 return Products::selectRaw(
                     'products.id,
                     products.product_id,
@@ -23,6 +37,8 @@ class ProductsController extends Controller
                     brands.brand_name,
                     categories.category_name,
                     products.stocks,
+                    products.old_stocks,
+                    products.stock_added_at,
                     products.price,
                     products.discount,
                     products.price * products.stocks as total_stock_price,
@@ -67,6 +83,7 @@ class ProductsController extends Controller
                 'brand_id' => $request->brand_id,
                 'category_id' => $request->category_id,
                 'stocks' => $request->stocks,
+                'stock_added_at' => now(),
                 'price' => $request->price,
                 'discount' => $request->discounted_price
             ]);
@@ -134,6 +151,7 @@ class ProductsController extends Controller
                     brands.brand_name,
                     categories.category_name,
                     products.stocks,
+                    products.old_stocks,
                     products.price,
                     products.discount,
                     products.price * products.stocks as total_stock_price,
@@ -186,6 +204,7 @@ class ProductsController extends Controller
                     'brand_id' => $request->brand_id,
                     'category_id' => $request->category_id,
                     'stocks' => $request->stocks,
+                    'stock_added_at' => now(),
                     'price' => $request->price,
                     'discount' => $request->discounted_price
                 ]);
@@ -250,7 +269,7 @@ class ProductsController extends Controller
 
 
                 $data = [
-                    'stocks' => $product->stocks,
+                    'stocks' => $product->stocks + $product->old_stocks,
                     'model_size' => $product->model_size,
                     'product_id' => $product->product_id,
                     'barcode' => $barcode
