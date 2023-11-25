@@ -22,6 +22,7 @@ class UserModel extends Model
         'name',
         'email',
         'password',
+        'role', // add this line
     ];
 
     /**

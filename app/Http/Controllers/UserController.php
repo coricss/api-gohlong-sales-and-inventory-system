@@ -18,15 +18,35 @@ class UserController extends Controller
     public function index()
     {
         if (auth()->user()) {
-            return UserModel::select(
-                'id',
-                'picture',
-                'name', 
-                'email',
-                'created_at',
-                'updated_at'
-            )->whereNotIn('id', [auth()->user()->id])
-            ->orderBy('id', 'desc')->get();
+            if(auth()->user()->role === 'super_admin') {
+                return UserModel::select(
+                    'id',
+                    'picture',
+                    'name', 
+                    'email',
+                    'role',
+                    'created_at',
+                    'updated_at'
+                )->whereNotIn('id', [auth()->user()->id])
+                ->orderBy('id', 'desc')->get();
+            } else if (auth()->user()->role === 'admin') {
+                return UserModel::select(
+                    'id',
+                    'picture',
+                    'name', 
+                    'email',
+                    'role',
+                    'created_at',
+                    'updated_at'
+                )->where('role', 'user')
+                ->whereNotIn('id', [auth()->user()->id])
+                ->orderBy('id', 'desc')->get();
+            } else {
+                return response()->json([
+                    'message' => 'Unauthorized'
+                ], 401);
+            }
+            
         } else {
             return response()->json([
                 'message' => 'Unauthorized'
@@ -56,12 +76,14 @@ class UserController extends Controller
                         'picture' => $image_name,
                         'name' => $request->name,
                         'email' => $request->email,
+                        'role' => $request->role,
                         'password' => Hash::make($request->password),
                     ]);
                 } else {
                     $user = User::create([
                         'name' => $request->name,
                         'email' => $request->email,
+                        'role' => $request->role,
                         'password' => Hash::make($request->password),
                     ]);
                 }
@@ -98,6 +120,7 @@ class UserController extends Controller
             'picture',
             'name', 
             'email',
+            'role',
             'created_at',
             'updated_at'
         )->where('id', $id)->first();
@@ -127,6 +150,7 @@ class UserController extends Controller
                     $user->picture = $image_name;
                     $user->name = $request->name;
                     $user->email = $request->email;
+                    $user->role = $request->role;
                     $user->updated_at = date('Y-m-d H:i:s');
                     $user->save();
 
@@ -140,6 +164,7 @@ class UserController extends Controller
                     $user = User::find($request->id);
                     $user->name = $request->name;
                     $user->email = $request->email;
+                    $user->role = $request->role;
                     $user->updated_at = date('Y-m-d H:i:s');
                     $user->save();
                 }
