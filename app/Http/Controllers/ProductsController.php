@@ -39,6 +39,7 @@ class ProductsController extends Controller
                     products.stocks,
                     products.old_stocks,
                     products.stock_added_at,
+                    products.actual_stocks,
                     products.price,
                     products.discount,
                     products.price * products.stocks as total_stock_price,
@@ -289,6 +290,34 @@ class ProductsController extends Controller
                 return response()->json([
                     'status' => '500',
                     'message' => $th->getMessage()
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+    }
+
+    public function update_actual_stocks(Request $request, $id) {
+        if(auth()->user()) {
+            try {
+                $product = Products::find($id);
+
+                $product->update([
+                    'actual_stocks' => $request->actual_stocks
+                ]);
+
+                return response()->json([
+                    'status' => '200',
+                    'message' => 'Product updated successfully',
+                    'product' => $product->product_id
+                ], 201);
+
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => '500',
+                    'message' => 'Error updating product'
                 ], 500);
             }
         } else {

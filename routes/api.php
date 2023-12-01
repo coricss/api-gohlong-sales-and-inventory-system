@@ -71,6 +71,7 @@ Route::get('/product-code/{product_code}', [ProductsController::class, 'product_
 Route::put('/update-product/{id}', [ProductsController::class, 'update']);
 Route::delete('/delete-product/{id}', [ProductsController::class, 'destroy']);
 Route::get('/print-barcode/{id}', [ProductsController::class, 'print_barcode']);
+Route::put('/update-actual-stocks/{id}', [ProductsController::class, 'update_actual_stocks']);
 
 /* SALES */
 Route::get('/count-sales', [SalesController::class, 'count_sales_today']);

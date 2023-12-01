@@ -18,6 +18,7 @@ class Products extends Model
         'stocks',
         'old_stocks',
         'stock_added_at',
+        'actual_stocks',
         'price',
         'discount'
     ];
