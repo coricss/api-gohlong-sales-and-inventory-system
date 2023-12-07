@@ -4,7 +4,7 @@
 
 <head>
 
-    <title>Laravel 10 Generate PDF Example - ItSolutionStuff.com</title>
+    <title>Print Barcode of {{ $model_size }}</title>
 
 </head>
 

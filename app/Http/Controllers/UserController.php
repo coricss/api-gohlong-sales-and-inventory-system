@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -70,7 +71,8 @@ class UserController extends Controller
                 if ($request->hasFile('picture')) {
                     $image = $request->file('picture');
                     $image_name = 'IMG_'.date('ymd').time() . '.' . $image->getClientOriginalExtension();
-                    $image->move(public_path('images'), $image_name);
+                   /*  $image->move(public_path('images'), $image_name); */
+                    $image->storeAs('images', $image_name, 'public');
     
                     $user = User::create([
                         'picture' => $image_name,
@@ -144,7 +146,8 @@ class UserController extends Controller
                 if ($request->hasFile('picture')) {
                     $image = $request->file('picture');
                     $image_name = 'IMG_'.date('ymd').time() . '.' . $image->getClientOriginalExtension();
-                    $image->move(public_path('images'), $image_name);
+                    /* $image->move(public_path('images'), $image_name); */
+                    $image->storeAs('images', $image_name, 'public');
     
                     $user = User::find($request->id);
                     $user->picture = $image_name;
@@ -155,10 +158,13 @@ class UserController extends Controller
                     $user->save();
 
                     if($user_pic->picture !== null) {
-                        $image_path = public_path().'/images/'.$user_pic->picture;
-                        if (file_exists($image_path)) {
+                       /*  $image_path = public_path().'/images/'.$user_pic->picture; */
+                       /*  if (file_exists($image_path)) {
                             unlink($image_path);
-                        }
+                        } */
+                        $image_path = 'images/'.$user_pic->picture;
+                        Storage::disk('public')->delete($image_path);
+                        
                     }
                 } else {
                     $user = User::find($request->id);
@@ -222,10 +228,12 @@ class UserController extends Controller
             $user->delete();
 
             if($user->picture !== null) {
-                $image_path = public_path().'/images/'.$user->picture;
+               /*  $image_path = public_path().'/images/'.$user->picture;
                 if (file_exists($image_path)) {
                     unlink($image_path);
-                }
+                } */
+                $image_path = 'images/'.$user->picture;
+                Storage::disk('public')->delete($image_path);
             }
 
             return response()->json([

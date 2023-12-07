@@ -6,6 +6,7 @@ use App\Models\ProfileModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Storage;
 class ProfileController extends Controller
 {
     /**
@@ -44,11 +45,13 @@ class ProfileController extends Controller
                 $imageName = 'IMG'.'_'.time().'.'.$request->file->getClientOriginalExtension();
                 $imageOld = ProfileModel::where('id', auth()->user()->id)->first();
 
-                if ($imageOld->picture !== null) {
+                /* if ($imageOld->picture !== null) {
                     unlink(public_path('images').'/'.$imageOld->picture);
-                } 
+                }  */
+                Storage::disk('public')->delete('images/'.$imageOld->picture);
         
-                $request->file->move(public_path('images'), $imageName);
+                /* $request->file->move(public_path('images'), $imageName); */
+                $request->file->storeAs('images', $imageName, 'public');
         
                 ProfileModel::where('id', auth()->user()->id)->update([
                     'picture' => $imageName,
