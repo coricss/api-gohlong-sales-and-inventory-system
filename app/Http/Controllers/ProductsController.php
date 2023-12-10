@@ -6,6 +6,7 @@ use App\Models\Products;
 use Illuminate\Http\Request;
 use PDF;
 use Picqer\Barcode\BarcodeGeneratorPNG;
+use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller
 {
@@ -278,7 +279,7 @@ class ProductsController extends Controller
 
                 $pdf = PDF::loadView('PrintBarcode', $data);
 
-                $pdf->save(public_path('barcodes/'.$product->product_id.'.pdf'));
+                $pdf->save(Storage::disk('public')->path('barcodes/'.$product->product_id.'.pdf'));
 
                 return response()->json([
                     'status' => '200',
