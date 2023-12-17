@@ -83,4 +83,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     /* LOGS */
     Route::get('/logs', [LogsController::class, 'index']);
     Route::post('/new-log', [LogsController::class, 'store']);
+
+    /* LOGOUT */
+    Route::post('/logout', [UserController::class, 'logout']);
 });
