@@ -87,3 +87,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     /* LOGOUT */
     Route::post('/logout', [UserController::class, 'logout']);
 });
+
+Route::post('/check_login_attempts', [UserController::class, 'check_login_attempts']);
+Route::post('/add_login_attempts', [UserController::class, 'add_login_attempts']);

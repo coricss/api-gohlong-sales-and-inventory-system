@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role', // add this line
+        'login_attempts', // add this line
     ];
 
     /**

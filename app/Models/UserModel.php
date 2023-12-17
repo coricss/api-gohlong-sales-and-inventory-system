@@ -23,6 +23,7 @@ class UserModel extends Model
         'email',
         'password',
         'role', // add this line
+        'login_attempts', // add this line
     ];
 
     /**
