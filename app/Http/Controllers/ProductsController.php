@@ -260,7 +260,26 @@ class ProductsController extends Controller
     public function print_barcode($id) {
         if(auth()->user()) {
             try {
-                $product = Products::find($id);
+                $product = Products::selectRaw(
+                    'products.id,
+                    products.product_id,
+                    products.brand_id,
+                    products.category_id,
+                    products.model_size,
+                    brands.brand_name,
+                    categories.category_name,
+                    products.stocks,
+                    products.old_stocks,
+                    products.price,
+                    products.discount,
+                    products.price * products.stocks as total_stock_price,
+                    products.discount * products.stocks as total_stock_discounted_price,
+                    products.created_at,
+                    products.updated_at'
+                )->join('brands', 'products.brand_id', '=', 'brands.id')
+                ->join('categories', 'products.category_id', '=', 'categories.id')
+                ->where('products.id', $id)
+                ->orderBy('products.id', 'desc')->first();
 
                
                 /* generate barcode */
@@ -273,6 +292,7 @@ class ProductsController extends Controller
                 $data = [
                     'stocks' => $product->stocks + $product->old_stocks,
                     'model_size' => $product->model_size,
+                    'brand_name' => $product->brand_name,
                     'product_id' => $product->product_id,
                     'barcode' => $barcode
                 ];
@@ -285,6 +305,68 @@ class ProductsController extends Controller
                     'status' => '200',
                     'message' => 'Barcode printed successfully',
                     'product' => $product
+                ], 201);
+
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => '500',
+                    'message' => $th->getMessage()
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+    }
+
+    public function print_all_barcode() {
+        if(auth()->user()) {
+            try {
+                $products = Products::selectRaw(
+                    'products.id,
+                    products.product_id,
+                    products.brand_id,
+                    products.category_id,
+                    products.model_size,
+                    brands.brand_name,
+                    categories.category_name,
+                    products.stocks,
+                    products.old_stocks,
+                    products.price,
+                    products.discount,
+                    products.price * products.stocks as total_stock_price,
+                    products.discount * products.stocks as total_stock_discounted_price,
+                    products.created_at,
+                    products.updated_at'
+                )->join('brands', 'products.brand_id', '=', 'brands.id')
+                ->join('categories', 'products.category_id', '=', 'categories.id')
+                ->orderBy('brands.brand_name', 'asc')->get();
+
+                foreach($products as $product) {
+                    /* generate barcode */
+                    $barcode = $product->product_id;
+
+                    $generator = new BarcodeGeneratorPNG();
+                    $barcode = base64_encode($generator->getBarcode($barcode, $generator::TYPE_CODE_128));
+                    $barcodeArray[] = $barcode;
+                }
+
+                
+               
+                $data = [
+                    'products' => $products,
+                    'barcodes' => $barcodeArray
+                ];
+
+                $pdf = PDF::loadView('PrintAllBarcode', $data);
+
+                $pdf->save(Storage::disk('public')->path('barcodes/Product Barcodes.pdf'));
+
+                return response()->json([
+                    'status' => '200',
+                    'message' => 'Barcode printed successfully',
+                    'products' => $barcodeArray
                 ], 201);
 
             } catch (\Throwable $th) {

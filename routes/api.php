@@ -72,6 +72,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::put('/update-product/{id}', [ProductsController::class, 'update']);
     Route::delete('/delete-product/{id}', [ProductsController::class, 'destroy']);
     Route::get('/print-barcode/{id}', [ProductsController::class, 'print_barcode']);
+    Route::get('/print-all-barcode', [ProductsController::class, 'print_all_barcode']);
     Route::put('/update-actual-stocks/{id}', [ProductsController::class, 'update_actual_stocks']);
 
     /* SALES */
