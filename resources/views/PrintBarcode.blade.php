@@ -4,7 +4,7 @@
 
 <head>
 
-    <title>Print Barcode of {{ $model_size }}</title>
+    <title>Print Barcode of {{ $brand_name }}</title>
 
 </head>
 
@@ -14,24 +14,16 @@
 
 <div>
 
-    <h1 style="text-align: center">Model/Size: {{ $model_size }}</h1>
+    <h1 style="text-align: center">Model/Size: {{ $brand_name }}</h1>
 
     
     <table border="0" width="100%">
-        @for ($i = 0; $i < $stocks; $i+=2)
             <tr>
                 <td align="center">
                     <img src="data:image/png;base64,{{ $barcode }}" width="300" height="100">
-                    <p style="text-align: center;">{{ $product_id }}</p>
-                </td>
-                <td align="center">
-                    @if ($i+1 < $stocks)
-                    <img src="data:image/png;base64,{{ $barcode }}" width="300" height="100">
-                    <p style="text-align: center;">{{ $product_id }}</p>
-                    @endif
+                    <p style="text-align: center;">{{ $model_size }}</p>
                 </td>
             </tr>
-        @endfor
     </table>
     
 

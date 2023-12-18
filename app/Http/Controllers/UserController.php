@@ -201,6 +201,8 @@ class UserController extends Controller
         if (auth()->user()) {
             $user = User::find($id);
             $user->password = Hash::make('GTSC@2023');
+            $user->login_attempts = 0;
+            $user->is_new_user = 1;
             $user->updated_at = date('Y-m-d H:i:s');
             $user->save();
 
@@ -247,5 +249,69 @@ class UserController extends Controller
             ], 401);
         }
 
+    }
+
+    public function logout(Request $request) {
+        $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            'status' => '200',
+            'message' => 'User logged out successfully'
+        ]);
+    }
+
+    public function check_login_attempts(Request $request) {
+        $user = User::where('email', $request->email)->first();
+        if($user !== null) {
+           if($user->role === 'super_admin') {
+                User::where('email', $request->email)->update(['login_attempts' => 0]);
+                return response()->json([
+                    'status' => '200',
+                    'message' => 'Login attempts reset successfully'
+                ], 200);
+           } else {
+                if($user->login_attempts == 2) {
+                    return response()->json([
+                        'status' => '401',
+                        'message' => 'You have reached the maximum number of login attempts. Please contact the administrator.'
+                    ], 200);
+                } else {
+                    User::where('email', $request->email)->update(['login_attempts' => 0]);
+                    return response()->json([
+                        'status' => '200',
+                        'message' => 'Login attempts reset successfully'
+                    ], 200);
+                }
+           }
+        } else {
+            return response()->json([
+                'status' => '404',
+                'message' => 'Email not found.'
+            ], 200);
+        }
+    }
+
+    public function add_login_attempts(Request $request) {
+        $user = User::where('email', $request->email)->first();
+        if($user !== null) {
+            if($user->login_attempts == 2) {
+                return response()->json([
+                    'status' => '401',
+                    'message' => 'You have reached the maximum number of login attempts. Please contact the administrator.'
+                ], 401);
+            } else {
+                User::where('email', $request->email)->increment('login_attempts');
+                $attempts = User::select('login_attempts')->where('email', $request->email)->first();
+
+                return response()->json([
+                    'status' => '200',
+                    'message' => 'Remaining login attempts: '.(3 - $attempts->login_attempts)
+                ], 200);
+            }
+        } else {
+            return response()->json([
+                'status' => '404',
+                'message' => 'Email not found.'
+            ], 404);
+        }
     }
 }
