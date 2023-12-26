@@ -70,6 +70,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/product/{id}', [ProductsController::class, 'show']);
     Route::get('/product-code/{product_code}', [ProductsController::class, 'product_code']);
     Route::put('/update-product/{id}', [ProductsController::class, 'update']);
+    Route::put('/update-inventory-stocks/{id}', [ProductsController::class, 'update_inventory_stocks']);
     Route::delete('/delete-product/{id}', [ProductsController::class, 'destroy']);
     Route::get('/print-barcode/{id}', [ProductsController::class, 'print_barcode']);
     Route::get('/print-all-barcode', [ProductsController::class, 'print_all_barcode']);

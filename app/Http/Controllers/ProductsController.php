@@ -45,6 +45,7 @@ class ProductsController extends Controller
                     products.discount,
                     products.price * products.stocks as total_stock_price,
                     products.discount * products.stocks as total_stock_discounted_price,
+                    products.expiration_date,
                     products.created_at,
                     products.updated_at'
                 )->join('brands', 'products.brand_id', '=', 'brands.id')
@@ -84,8 +85,8 @@ class ProductsController extends Controller
                 'model_size' => $request->model_size,
                 'brand_id' => $request->brand_id,
                 'category_id' => $request->category_id,
-                'stocks' => $request->stocks,
-                'stock_added_at' => now(),
+                'stocks' => 0,
+                'stock_added_at' => null,
                 'price' => $request->price,
                 'discount' => $request->discounted_price
             ]);
@@ -121,6 +122,7 @@ class ProductsController extends Controller
                     products.discount,
                     products.price * products.stocks as total_stock_price,
                     products.discount * products.stocks as total_stock_discounted_price,
+                    products.expiration_date,
                     products.created_at,
                     products.updated_at'
                 )->join('brands', 'products.brand_id', '=', 'brands.id')
@@ -158,6 +160,7 @@ class ProductsController extends Controller
                     products.discount,
                     products.price * products.stocks as total_stock_price,
                     products.discount * products.stocks as total_stock_discounted_price,
+                    products.expiration_date,
                     products.created_at,
                     products.updated_at'
                 )->join('brands', 'products.brand_id', '=', 'brands.id')
@@ -229,6 +232,36 @@ class ProductsController extends Controller
         }
     }
 
+    public function update_inventory_stocks(Request $request, $id)
+    {
+        if(auth()->user()) {
+            try {
+                $product = Products::find($id);
+
+                $product->update([
+                    'stocks' => $request->stocks,
+                    'expiration_date' => date('Y-m-d', strtotime($request->expiration_date)),
+                    'stock_added_at' => now()
+                ]);
+
+                return response()->json([
+                    'message' => 'Product updated successfully',
+                    'product' => $product
+                ], 201);
+
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => '500',
+                    'message' => 'Error updating product'
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -274,6 +307,7 @@ class ProductsController extends Controller
                     products.discount,
                     products.price * products.stocks as total_stock_price,
                     products.discount * products.stocks as total_stock_discounted_price,
+                    products.expiration_date,
                     products.created_at,
                     products.updated_at'
                 )->join('brands', 'products.brand_id', '=', 'brands.id')
@@ -337,6 +371,7 @@ class ProductsController extends Controller
                     products.discount,
                     products.price * products.stocks as total_stock_price,
                     products.discount * products.stocks as total_stock_discounted_price,
+                    products.expiration_date,
                     products.created_at,
                     products.updated_at'
                 )->join('brands', 'products.brand_id', '=', 'brands.id')

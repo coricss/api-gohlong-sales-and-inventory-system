@@ -20,7 +20,8 @@ class Products extends Model
         'stock_added_at',
         'actual_stocks',
         'price',
-        'discount'
+        'discount',
+        'expiration_date'
     ];
 
     public function brands()
