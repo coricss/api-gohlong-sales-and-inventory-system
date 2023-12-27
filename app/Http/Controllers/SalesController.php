@@ -85,6 +85,8 @@ class SalesController extends Controller
                     sales.is_discounted,
                     sales.quantity,
                     sales.subtotal,
+                    sales.mode_of_payment,
+                    sales.ref_no,
                     sales.payment,
                     sales.change,
                     sales.created_at'
@@ -133,6 +135,8 @@ class SalesController extends Controller
                         'is_discounted' => $item['is_discounted'],
                         'quantity' => $item['quantity'],
                         'subtotal' => $item['subtotal'],
+                        'mode_of_payment' => $request->mode_of_payment,
+                        'ref_no' => $request->reference_number,
                         'payment' => $request->payment,
                         'change' => $request->change
                     ]);

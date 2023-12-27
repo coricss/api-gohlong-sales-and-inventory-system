@@ -19,6 +19,8 @@ class Sales extends Model
         'is_discounted',
         'quantity',
         'subtotal',
+        'mode_of_payment',
+        'ref_no',
         'payment',
         'change'
     ];
