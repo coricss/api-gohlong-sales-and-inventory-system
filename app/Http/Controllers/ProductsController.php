@@ -143,7 +143,7 @@ class ProductsController extends Controller
         }
     }
 
-    public function product_code($product_code) {
+    public function product_code($barcode) {
         if(auth()->user()) {
             try {
                 $product = Products::selectRaw(
@@ -165,7 +165,7 @@ class ProductsController extends Controller
                     products.updated_at'
                 )->join('brands', 'products.brand_id', '=', 'brands.id')
                 ->join('categories', 'products.category_id', '=', 'categories.id')
-                ->where('products.product_id', $product_code)
+                ->where('products.product_id', $barcode)
                 ->orderBy('products.id', 'desc')->first();
 
                 return response()->json([
@@ -173,6 +173,57 @@ class ProductsController extends Controller
                     'message' => 'Product fetched successfully',
                     'product' => $product
                 ], 201);
+
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => '500',
+                    'message' => 'Error fetching products'
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+    }
+
+    public function product_barcode($barcode) {
+        if(auth()->user()) {
+            try {
+                $product = Products::selectRaw(
+                    'products.id,
+                    products.product_id,
+                    products.brand_id,
+                    products.category_id,
+                    products.model_size,
+                    brands.brand_name,
+                    categories.category_name,
+                    products.stocks,
+                    products.old_stocks,
+                    products.price,
+                    products.discount,
+                    products.price * products.stocks as total_stock_price,
+                    products.discount * products.stocks as total_stock_discounted_price,
+                    products.expiration_date,
+                    products.created_at,
+                    products.updated_at'
+                )->join('brands', 'products.brand_id', '=', 'brands.id')
+                ->join('categories', 'products.category_id', '=', 'categories.id')
+                ->where('products.product_id', $barcode)
+                ->orderBy('products.id', 'desc')->first();
+
+                if($product) {
+                    return response()->json([
+                        'status' => '200',
+                        'message' => 'Product fetched successfully',
+                        'product' => $product
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => '404',
+                        'message' => 'Product not found'
+                    ], 200);
+                }
 
             } catch (\Throwable $th) {
                 return response()->json([
@@ -315,7 +366,7 @@ class ProductsController extends Controller
                 ->where('products.id', $id)
                 ->orderBy('products.id', 'desc')->first();
 
-               
+
                 /* generate barcode */
                 $barcode = $product->product_id;
 
@@ -387,8 +438,8 @@ class ProductsController extends Controller
                     $barcodeArray[] = $barcode;
                 }
 
-                
-               
+
+
                 $data = [
                     'products' => $products,
                     'barcodes' => $barcodeArray
@@ -424,6 +475,34 @@ class ProductsController extends Controller
 
                 $product->update([
                     'actual_stocks' => $request->actual_stocks
+                ]);
+
+                return response()->json([
+                    'status' => '200',
+                    'message' => 'Product updated successfully',
+                    'product' => $product->product_id
+                ], 201);
+
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => '500',
+                    'message' => 'Error updating product'
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+    }
+
+    public function add_actual_stocks(Request $request, $id) {
+        if(auth()->user()) {
+            try {
+                $product = Products::find($id);
+
+                $product->update([
+                    'actual_stocks' => $product->actual_stocks + $request->actual_stocks
                 ]);
 
                 return response()->json([

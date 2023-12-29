@@ -69,12 +69,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/new-product', [ProductsController::class, 'store']);
     Route::get('/product/{id}', [ProductsController::class, 'show']);
     Route::get('/product-code/{product_code}', [ProductsController::class, 'product_code']);
+    Route::get('/search-product-barcode/{barcode}', [ProductsController::class, 'product_barcode']);
     Route::put('/update-product/{id}', [ProductsController::class, 'update']);
     Route::put('/update-inventory-stocks/{id}', [ProductsController::class, 'update_inventory_stocks']);
     Route::delete('/delete-product/{id}', [ProductsController::class, 'destroy']);
     Route::get('/print-barcode/{id}', [ProductsController::class, 'print_barcode']);
     Route::get('/print-all-barcode', [ProductsController::class, 'print_all_barcode']);
     Route::put('/update-actual-stocks/{id}', [ProductsController::class, 'update_actual_stocks']);
+    Route::put('add-actual-stocks/{id}', [ProductsController::class, 'add_actual_stocks']);
 
     /* SALES */
     Route::get('/count-sales', [SalesController::class, 'count_sales_today']);
