@@ -429,20 +429,20 @@ class ProductsController extends Controller
                 ->join('categories', 'products.category_id', '=', 'categories.id')
                 ->orderBy('brands.brand_name', 'asc')->get();
 
-                foreach($products as $product) {
-                    /* generate barcode */
-                    $barcode = $product->product_id;
+                // foreach($products as $product) {
+                //     /* generate barcode */
+                //     $barcode = $product->product_id;
 
-                    $generator = new BarcodeGeneratorPNG();
-                    $barcode = base64_encode($generator->getBarcode($barcode, $generator::TYPE_CODE_128));
-                    $barcodeArray[] = $barcode;
-                }
+                    
+                //     $barcode_img = base64_encode($generator->getBarcode($barcode, $generator::TYPE_CODE_128));
+                //     /* push barcode_img to array */
+                //     $barcodeArray[] = $barcode_img;
+                // }
 
-
-
+                $generator = new BarcodeGeneratorPNG();
                 $data = [
                     'products' => $products,
-                    'barcodes' => $barcodeArray
+                    'barcodes' => $generator
                 ];
 
                 $pdf = PDF::loadView('PrintAllBarcode', $data);
@@ -451,8 +451,8 @@ class ProductsController extends Controller
 
                 return response()->json([
                     'status' => '200',
-                    'message' => 'Barcode printed successfully',
-                    'products' => $barcodeArray
+                    'message' => 'Barcode printed successfully'
+                    /* 'products' => $barcodeArray */
                 ], 201);
 
             } catch (\Throwable $th) {

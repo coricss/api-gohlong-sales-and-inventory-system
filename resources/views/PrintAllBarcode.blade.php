@@ -30,7 +30,7 @@
                 <tr>
                     @foreach($chunk as $product)
                         <td align="center" style="text-align: center;" @if(count($chunk) == 1) colspan="2" @endif>
-                            <img src="data:image/png;base64,{{ $barcodes[$loop->index] }}" width="300" height="100" style="padding-top: 1rem">
+                            <img src="data:image/png;base64,{{ base64_encode($barcodes->getBarcode($product->product_id, $barcodes::TYPE_CODE_128)) }}" width="300" height="100" style="padding-top: 1rem">
                             <div style="display: flex; justify-content: start;">
                                 <p style="">Model/Size: {{ $product->model_size }}</p>
                             </div>
@@ -41,6 +41,8 @@
                     @endif
                 </tr>
             @endforeach
+
+           
         @endforeach
 
     </table>
