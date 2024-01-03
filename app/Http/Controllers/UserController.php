@@ -23,7 +23,7 @@ class UserController extends Controller
                 return UserModel::select(
                     'id',
                     'picture',
-                    'name', 
+                    'name',
                     'email',
                     'role',
                     'created_at',
@@ -34,7 +34,7 @@ class UserController extends Controller
                 return UserModel::select(
                     'id',
                     'picture',
-                    'name', 
+                    'name',
                     'email',
                     'role',
                     'created_at',
@@ -47,7 +47,7 @@ class UserController extends Controller
                     'message' => 'Unauthorized'
                 ], 401);
             }
-            
+
         } else {
             return response()->json([
                 'message' => 'Unauthorized'
@@ -73,7 +73,7 @@ class UserController extends Controller
                     $image_name = 'IMG_'.date('ymd').time() . '.' . $image->getClientOriginalExtension();
                    /*  $image->move(public_path('images'), $image_name); */
                     $image->storeAs('images', $image_name, 'public');
-    
+
                     $user = User::create([
                         'picture' => $image_name,
                         'name' => $request->name,
@@ -103,7 +103,7 @@ class UserController extends Controller
                 ], 500);
             }
 
-            
+
         } else {
             return response()->json([
                 'status' => '401',
@@ -120,7 +120,7 @@ class UserController extends Controller
         return UserModel::select(
             'id',
             'picture',
-            'name', 
+            'name',
             'email',
             'role',
             'created_at',
@@ -148,7 +148,7 @@ class UserController extends Controller
                     $image_name = 'IMG_'.date('ymd').time() . '.' . $image->getClientOriginalExtension();
                     /* $image->move(public_path('images'), $image_name); */
                     $image->storeAs('images', $image_name, 'public');
-    
+
                     $user = User::find($request->id);
                     $user->picture = $image_name;
                     $user->name = $request->name;
@@ -164,7 +164,7 @@ class UserController extends Controller
                         } */
                         $image_path = 'images/'.$user_pic->picture;
                         Storage::disk('public')->delete($image_path);
-                        
+
                     }
                 } else {
                     $user = User::find($request->id);
@@ -188,7 +188,7 @@ class UserController extends Controller
                 ], 500);
             }
 
-            
+
         } else {
             return response()->json([
                 'status' => '401',
@@ -200,7 +200,7 @@ class UserController extends Controller
     public function reset_password($id) {
         if (auth()->user()) {
             $user = User::find($id);
-            $user->password = Hash::make('GTSC@2023');
+            $user->password = Hash::make('GTSC@'.date('Y'));
             $user->login_attempts = 0;
             $user->is_new_user = 1;
             $user->updated_at = date('Y-m-d H:i:s');
@@ -224,7 +224,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        
+
         if (auth()->user()) {
             $user = User::find($id);
             $user->delete();
